@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encriptador con Archivo</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #ff6347;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 2px solid #ff6347;
+            padding: 10px;
+            font-size: 16px;
+            resize: none;
+            background-color: #fff7e6;
+        }
+        .file-upload {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .file-upload input[type="file"] {
+            display: none;
+        }
+        .file-upload label {
+            background-color: #ff6347;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        .file-upload label:hover {
+            background-color: #e5533d;
+        }
+        .file-upload .file-name {
+            font-size: 16px;
+            color: #333;
+        }
+        .section-title {
+            font-size: 20px;
+            color: #ff6347;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .button-group button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            background-color: #87cefa;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .button-group button:hover {
+            background-color: #4682b4;
+        }
+        .download-group button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            background-color: #32cd32;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .download-group button:hover {
+            background-color: #228b22;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛠️ Encriptador de Mensajes 📄</h1>
+
+        <div class="file-upload">
+            <label for="fileInput">Cargar Archivo</label>
+            <span class="file-name">No se ha seleccionado archivo</span>
+            <input type="file" id="fileInput">
+        </div>
+
+        <textarea id="inputText" placeholder="Escribe tu mensaje aquí o carga un archivo..."></textarea>
+        <textarea id="outputText" placeholder="El resultado aparecerá aquí..." readonly></textarea>
+        
+        <div class="section-title">Encriptación:</div>
+        <div class="button-group">
+            <button onclick="encrypt(2)">2 caracteres</button>
+            <button onclick="encrypt(4)">4 caracteres</button>
+            <button onclick="encrypt(8)">8 caracteres</button>
+            <button onclick="encrypt(16)">16 caracteres</button>
+            <button onclick="encrypt(32)">32 caracteres</button> <!-- Nueva opción -->
+        </div>
+
+        <div class="section-title">Desencriptación:</div>
+        <div class="button-group">
+            <button onclick="decrypt(2)">2 caracteres</button>
+            <button onclick="decrypt(4)">4 caracteres</button>
+            <button onclick="decrypt(8)">8 caracteres</button>
+            <button onclick="decrypt(16)">16 caracteres</button>
+            <button onclick="decrypt(32)">32 caracteres</button> <!-- Nueva opción -->
+        </div>
+
+        <div class="section-title">Descargas:</div>
+        <div class="download-group">
+            <button onclick="downloadResult()">Texto Procesado</button>
+            <button onclick="downloadCipherMap()">Tabla de Cifrado</button>
+        </div>
+
+        <img src="https://scontent.fsrz4-1.fna.fbcdn.net/v/t39.30808-6/336652018_1865010397340727_7274157431965111225_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=gAzQaJHAffcQ7kNvgFAP8tY&_nc_ht=scontent.fsrz4-1.fna&oh=00_AYCx6UYzXOaS1jii2RhG9_G_95B9RKrzkQJuQ4jv4creKA&oe=66C2F07E" alt="" width="350px">
+        <P>El creador (Osea yo): Bruno Fiorilo</P>
+    </div>
+    
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function() {
+            const fileName = this.files[0] ? this.files[0].name : 'No se ha seleccionado archivo';
+            document.querySelector('.file-name').textContent = fileName;
+        });
+
+        const charMap = {
+            2: {
+                'a': 'qw', 'b': 'er', 'c': 'ty', 'd': 'ui', 'e': 'op', 'f': 'as', 'g': 'df', 'h': 'gh',
+                'i': 'jk', 'j': 'lz', 'k': 'xc', 'l': 'vb', 'm': 'nm', 'n': 'az', 'o': 'sx', 'p': 'dc',
+                'q': 'fv', 'r': 'gb', 's': 'hn', 't': 'jm', 'u': 'kl', 'v': 'mq', 'w': 'pl', 'x': 'ko',
+                'y': 'ji', 'z': 'hu', ' ': 'jr'
+            },
+            4: {
+                'a': 'qwer', 'b': 'tyui', 'c': 'opas', 'd': 'dfgh', 'e': 'jklz', 'f': 'xcvb', 'g': 'nmqw',
+                'h': 'erty', 'i': 'uiop', 'j': 'asdf', 'k': 'ghjk', 'l': 'lzxc', 'm': 'vbnm', 'n': 'wert',
+                'o': 'yuio', 'p': 'qazs', 'q': 'wxdj', 'r': 'cfre', 's': 'gtby', 't': 'hzun', 'u': 'jmkw',
+                'v': 'loqw', 'w': 'pxaz', 'x': 'sdfr', 'y': 'vbnh', 'z': 'mjkl', ' ': 'pasi'
+            },
+            8: {
+                'a': 'qwertyui', 'b': 'opasdfgh', 'c': 'jklzxcvb', 'd': 'nmqwerty', 'e': 'uiopasdf', 'f': 'ghjklzxc',
+                'g': 'vbnmqwer', 'h': 'tyuiopas', 'i': 'dfghjklz', 'j': 'xcvbnmwe', 'k': 'rtyuiope', 'l': 'qasdfghj',
+                'm': 'klzxcvbn', 'n': 'wertyuiq', 'o': 'pasdfghj', 'p': 'ahiviene', 'q': 'mwertyui', 'r': 'asdfghjk',
+                's': 'eenlossk', 't': 'toiletsd', 'u': 'skibidis', 'v': 'lzxcvbnm', 'w': 'gedagedi', 'x': 'sigmboys',
+                'y': 'qiowyueo', 'z': 'nmwertyu', ' ': 'pasiutie'
+            },
+            16: {
+                'a': 'qwertyuiopasdfgh', 'b': 'jklzxcvbnmqwerty', 'c': 'uiopasdfghjklzxc', 'd': 'vbnmqwertyuiopas',
+                'e': 'dfghjklzxcvbnmwe', 'f': 'rtyuiopasdfghjkl', 'g': 'zxcvbnmwertyuiop', 'h': 'asdfghjklzxcvbnm',
+                'i': 'qwerttykfdlanejk', 'j': 'kiajusdlwejirola', 'k': 'poqowiuelqwuehjd', 'l': 'juiasckasejlkaje',
+                'm': 'kioawepojdaswert', 'n': 'asdjuiwqeyuiasdn', 'o': 'jeudlkeirutjgnfk', 'p': 'asdjqwieiuahsewu',
+                'q': 'yuioplkjhgfdsazx', 'r': 'cvbnmlkjhgfdwert', 's': 'poiuytrewqazxcvb', 't': 'nmqazwsxedcrfvtg',
+                'u': 'byuhnmiokplqazws', 'v': 'xcdewsqazplokmnj', 'w': 'ijnmlokmnbvcxyza', 'x': 'lkijuhygtfrewsdc',
+                'y': 'qazwsxedcrfvtgby', 'z': 'uhnijmnbvcxzasqw', ' ': 'pasiutieueksdosf'
+            },
+            32: {
+                'a': 'sorryamanainotevenangryoveryouri',
+                'b': 'ghtnowibearnogrudgeagainstanioni',
+                'c': 'eitsjustthattheworldfeelssosowon',
+                'd': 'derfulrightnowthroughoutheavenan',
+                'e': 'dearthialoneamthehonoredonetheme',
+                'f': 'ritofhavingatechniquethatspassed',
+                'g': 'downforgenerationsishavingausers',
+                'h': 'manualthedemeritisthatinformatio',
+                'i': 'naboutthetechniqueiseasilyleaked',
+                'j': 'youwereamemberofthezeninclanwere',
+                'k': 'ntyouthatswhyyouknowsomuchaboutt',
+                'l': 'helimitlesstechniquehowevereveni',
+                'm': 'nthegojoclanonlyascantfewknowabo',
+                'n': 'utthistaketheamplifiedandthereve',
+                'o': 'rsalthensmashtogetherthosetwodif',
+                'p': 'ferentexpressionsofinfinitytocre',
+                'q': 'ateandpushoutimaginarymassimagin',
+                'r': 'arytechniquepurplesorryamanainot',
+                's': 'evenangryoveryourightnowibearnog',
+                't': 'rudgeagainstanyoneitsjustthatthe',
+                'u': 'worldfeelssosowonderfulrightnowt',
+                'v': 'hroughoutheavenandearthialoneamt',
+                'w': 'hehonoredonethemeritofhavingatec',
+                'x': 'hniquethatspasseddownforgenerati',
+                'y': 'onsishavingausersmanualthedemeri',
+                'z': 'tistthatinformationaboutthetechn',
+                ' ': 'iqueiseasilyleakedyouwereamember'
+            }
+        };
+
+        let fileName = "";
+
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            fileName = file.name.replace(/\.[^/.]+$/, ""); // Remover extensión
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('inputText').value = e.target.result;
+            };
+            reader.readAsText(file);
+        });
+
+        function encrypt(length) {
+            let input = document.getElementById('inputText').value.toLowerCase();
+            let output = '';
+            for (let i = 0; i < input.length; i++) {
+                let char = input[i];
+                output += charMap[length][char] || char;
+            }
+            document.getElementById('outputText').value = output;
+        }
+
+        function decrypt(length) {
+            let input = document.getElementById('outputText').value.toLowerCase();
+            let output = '';
+            let success = true;
+            for (let i = 0; i < input.length; i += length) {
+                let chunk = input.substr(i, length);
+                let decryptedChar = Object.keys(charMap[length]).find(key => charMap[length][key] === chunk);
+                if (decryptedChar) {
+                    output += decryptedChar;
+                } else {
+                    success = false;
+                    break;
+                }
+            }
+            if (success) {
+                document.getElementById('outputText').value = output;
+            } else {
+                alert("No se puede desencriptar el texto, formato incorrecto.");
+            }
+        }
+
+        function downloadResult() {
+            const output = document.getElementById('outputText').value;
+            if (output.trim() === "") {
+                alert("No hay texto procesado para descargar.");
+                return;
+            }
+            const blob = new Blob([output], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${fileName}_processed.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadCipherMap() {
+            let cipherMapText = "Tabla de Cifrado:\n\n";
+            for (let length in charMap) {
+                cipherMapText += `\nCifrado de ${length} caracteres:\n`;
+                for (let char in charMap[length]) {
+                    cipherMapText += `${char} -> ${charMap[length][char]}\n`;
+                }
+            }
+            const blob = new Blob([cipherMapText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "cipher_map.txt";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
